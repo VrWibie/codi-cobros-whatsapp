@@ -35,6 +35,7 @@ export class Store {
   addCharge(c: Charge) { this.d.charges.push(c); this.save(); }
   getCharge(id: string) { return this.d.charges.find((c) => c.id === id); }
   findByPeyRef(ref: string) { return this.d.charges.find((c) => c.peyRefId === ref); }
+  allCharges() { return [...this.d.charges].sort((a, b) => b.createdAt - a.createdAt); }
   chargesOf(merchant: string) { return this.d.charges.filter((c) => c.merchantPhone === merchant); }
   update(c: Charge) { this.save(); return c; }
 

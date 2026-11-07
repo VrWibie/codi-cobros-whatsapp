@@ -3,7 +3,7 @@ import { parseMessage, type Intent } from './parser.js';
 import type { PeyClient } from './pey.js';
 import type { Charge, Store } from './store.js';
 
-export interface Reply { text: string; imageUrl?: string }
+export interface Reply { text: string; imageUrl?: string; chargeId?: string }
 export interface BotDeps {
   store: Store;
   pey: Pick<PeyClient, 'createQr' | 'createPush'>;
@@ -53,6 +53,7 @@ export function createBot(deps: BotDeps) {
       return [{
         text: `🧾 QR CoDi por ${money(dr.amount)} (${dr.concept}). Pídele a tu cliente que lo escanee con la app de su banco. Te aviso cuando pague.`,
         imageUrl: base ? `${base}/qr/${id}.png` : undefined,
+        chargeId: id,
       }];
     } catch (e) {
       console.error(e);

@@ -12,6 +12,13 @@ Exponer con un túnel (ngrok/cloudflared) y registrar:
 - Webhook pey → `POST {PUBLIC_URL}/webhooks/pey` (portal pey → API key → Webhooks; copiar el secreto `whsec_…`)
 - Webhook Meta → `{PUBLIC_URL}/webhooks/whatsapp` (verify token = `WA_VERIFY_TOKEN`)
 
+## Modo demo (sin WhatsApp ni pey)
+```
+DEMO_MODE=1 npm run dev
+```
+- `http://localhost:3000/demo` → chat tipo WhatsApp para hablar con el bot.
+- `http://localhost:3000/panel` → cobros en vivo; botón "Simular pago" dispara el mismo camino que un webhook real.
+
 ## Notas de la API de pey
 - Solo producción (`https://api.pey.mx`); probar con $0.01 MXN.
 - QR: `POST /codi/qr` · Push: `POST /codi/pn` (teléfono 10 dígitos, vence ≥ 360 s).

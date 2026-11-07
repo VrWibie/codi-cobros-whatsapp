@@ -1,0 +1,28 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demo · Cobrador CoDi</title>
+<style>
+:root{--g:#128c7e;--bg:#e5ddd5}*{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:#d9d9d9;display:flex;justify-content:center}
+.phone{width:min(420px,100vw);height:100vh;display:flex;flex-direction:column;background:var(--bg)}
+header{background:var(--g);color:#fff;padding:14px 16px;font-weight:600}header small{display:block;font-weight:400;opacity:.85}
+#log{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:6px}
+.m{max-width:80%;padding:8px 10px;border-radius:8px;white-space:pre-wrap;box-shadow:0 1px 1px #0002;font-size:15px}
+.me{align-self:flex-end;background:#dcf8c6}.bot{align-self:flex-start;background:#fff}.m img{width:100%;border-radius:6px;margin-top:6px}
+form{display:flex;gap:6px;padding:8px;background:#f0f0f0}input{flex:1;padding:10px;border-radius:20px;border:1px solid #ccc;font-size:15px}
+button{background:var(--g);color:#fff;border:0;border-radius:20px;padding:0 16px;font-weight:600;cursor:pointer}
+.chips{display:flex;gap:6px;padding:6px 8px;flex-wrap:wrap;background:#f0f0f0}.chips span{font-size:12px;background:#fff;border:1px solid #ccc;border-radius:12px;padding:4px 8px;cursor:pointer}
+</style></head><body><div class="phone">
+<header>Cobrador CoDi<small>Chat de demostración · <a href="/panel" style="color:#fff">ver panel</a></small></header>
+<div id="log"></div>
+<div class="chips" id="chips"></div>
+<form id="f"><input id="t" autocomplete="off" placeholder="cóbrale 350 por 2 tortas"><button>Enviar</button></form></div>
+<script>
+const from='demo-'+(localStorage.cid||(localStorage.cid=Math.random().toString(36).slice(2,8)));
+const log=document.getElementById('log');
+function add(t,c,img){const d=document.createElement('div');d.className='m '+c;d.textContent=t;if(img){const i=new Image();i.src=img;d.appendChild(i)}log.appendChild(d);log.scrollTop=1e9}
+async function send(text){add(text,'me');const r=await (await fetch('/api/demo/message',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({from,text})})).json();
+ (r.replies||[]).forEach(x=>add(x.text,'bot',x.chargeId?'/qr/'+x.chargeId+'.png':null))}
+document.getElementById('f').onsubmit=e=>{e.preventDefault();const t=document.getElementById('t');if(t.value.trim()){send(t.value.trim());t.value=''}};
+['hola','cóbrale 350 por 2 tortas','cóbrale 120 a 5512345678 por mensualidad','sí','pendientes','resumen del día'].forEach(x=>{const s=document.createElement('span');s.textContent=x;s.onclick=()=>send(x);chips.appendChild(s)});
+setInterval(async()=>{const r=await (await fetch('/api/demo/inbox?from='+from)).json();(r.messages||[]).forEach(m=>add(m.text,'bot'))},2000);
+send('hola');
+</script></body></html>

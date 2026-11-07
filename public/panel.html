@@ -1,0 +1,27 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Panel · Cobros CoDi</title>
+<style>
+:root{--g:#128c7e;--ink:#1c2b2a;--mut:#6b7c7b;--line:#e3ebea}*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,sans-serif;color:var(--ink);background:#f6faf9}
+.w{max-width:960px;margin:0 auto;padding:24px 16px}h1{margin:0 0 4px;font-size:24px}p.s{margin:0 0 20px;color:var(--mut)}
+.k{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+.c{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px}.c b{display:block;font-size:26px;margin-top:4px}.c span{color:var(--mut);font-size:13px}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);font-size:14px}th{background:#f0f6f5;color:var(--mut);font-weight:600}
+.b{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600}.pending{background:#fff4d6;color:#8a6100}.paid{background:#d8f5e6;color:#0b6b3a}
+button{background:var(--g);color:#fff;border:0;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:12px}a{color:var(--g)}
+</style></head><body><div class="w">
+<h1>Cobros CoDi en vivo</h1><p class="s">Se actualiza solo · <a href="/demo">abrir chat de demostración</a> <span id="mode"></span></p>
+<div class="k"><div class="c"><span>Cobrado hoy</span><b id="paid">$0</b></div><div class="c"><span>Por cobrar</span><b id="pend">$0</b></div><div class="c"><span>Cobros pagados</span><b id="n">0</b></div></div>
+<table><thead><tr><th>Hora</th><th>Concepto</th><th>Monto</th><th>Vía</th><th>Estado</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+<script>
+const f=n=>'$'+n.toLocaleString('es-MX',{minimumFractionDigits:2});let demo=false;
+fetch('/api/info').then(r=>r.json()).then(i=>{demo=i.demo;mode.textContent=demo?'· MODO DEMO (pey simulado)':''});
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function pay(id){await fetch('/api/demo/pay/'+id,{method:'POST'});load()}
+async function load(){const cs=await (await fetch('/api/charges')).json();const d0=new Date();d0.setHours(0,0,0,0);
+ const today=cs.filter(c=>c.createdAt>=d0.getTime());const p=today.filter(c=>c.status==='paid');
+ paid.textContent=f(p.reduce((s,c)=>s+c.amount,0));pend.textContent=f(today.filter(c=>c.status==='pending').reduce((s,c)=>s+c.amount,0));n.textContent=p.length;
+ rows.innerHTML=cs.map(c=>`<tr><td>${new Date(c.createdAt).toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'})}</td><td>${esc(c.concept)}</td><td>${f(c.amount)}</td><td>${c.method==='qr'?'QR':'Push '+esc(c.payerPhone||'')}</td><td><span class="b ${c.status}">${c.status==='paid'?'Pagado':'Pendiente'}</span></td><td>${demo&&c.status==='pending'?`<button onclick="pay('${c.id}')">Simular pago</button>`:''}</td></tr>`).join('')||'<tr><td colspan=6 style="color:#6b7c7b">Aún no hay cobros.</td></tr>'}
+load();setInterval(load,2000);
+</script></body></html>
