@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cobra CoDi · Caja</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23E5177A%27/%3E%3Ctext x=%2716%27 y=%2723%27 font-size=%2722%27 font-weight=%27800%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27sans-serif%27%3EC%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --concreto:#E9EDF2; --papel:#FBFBF8; --tinta:#121B33; --tinta2:#4A5775; --linea:#CBD3DF;
+  --rosa:#E5177A; --verde:#0B8F63; --verde-bg:#D9F4E8; --ambar:#E39B0B; --ambar-bg:#FCEFCB;
+  --font:'Bricolage Grotesque',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'DM Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--concreto);color:var(--tinta);font-family:var(--font);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+:focus-visible{outline:3px solid var(--rosa);outline-offset:2px}
+button{font:inherit;cursor:pointer}
+.app{display:grid;grid-template-columns:minmax(340px,400px) 1fr;gap:clamp(20px,4vw,56px);max-width:1180px;margin:0 auto;padding:clamp(16px,3vw,32px);min-height:100%}
+
+/* ---------- Teléfono ---------- */
+.phone{position:sticky;top:clamp(16px,3vw,32px);align-self:start;height:min(760px,calc(100vh - 48px));display:flex;flex-direction:column;background:#DCE3EA;border:10px solid var(--tinta);border-radius:40px;overflow:hidden;box-shadow:0 30px 60px -30px #121B3366}
+.phone header{background:var(--tinta);color:#fff;padding:14px 18px 12px;display:flex;align-items:center;gap:12px}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--rosa);display:grid;place-items:center;font-weight:800;font-size:18px}
+.phone header b{display:block;font-weight:600;line-height:1.1}
+.phone header span{font-size:13px;opacity:.75}
+#log{flex:1;overflow:auto;padding:14px 12px;display:flex;flex-direction:column;gap:6px;scroll-behavior:smooth}
+.m{max-width:84%;padding:8px 11px;border-radius:14px;white-space:pre-wrap;font-size:15px;line-height:1.35;box-shadow:0 1px 0 #121B3322}
+.me{align-self:flex-end;background:#D3F2DF;border-bottom-right-radius:4px}
+.bot{align-self:flex-start;background:#fff;border-bottom-left-radius:4px}
+.m img{display:block;width:100%;max-width:240px;margin-top:8px;border-radius:8px;background:#fff}
+.chips{display:flex;gap:6px;padding:8px 10px;overflow-x:auto;background:#CDD6E0;scrollbar-width:none}
+.chips button{flex:none;border:1px solid var(--linea);background:#fff;color:var(--tinta);border-radius:999px;padding:6px 12px;font-size:13.5px}
+.chips button:hover{border-color:var(--tinta)}
+.composer{display:flex;gap:8px;padding:10px;background:#CDD6E0}
+.composer input{flex:1;min-width:0;border:0;border-radius:999px;padding:12px 16px;font:inherit;font-size:15px;background:#fff;color:var(--tinta)}
+.composer button{border:0;border-radius:999px;background:var(--rosa);color:#fff;font-weight:600;padding:0 20px}
+.composer button:hover{background:#c8106a}
+
+/* ---------- Caja ---------- */
+.caja{padding-top:clamp(4px,1vw,12px);min-width:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:clamp(20px,4vw,40px)}
+.brand{font-weight:800;font-size:22px;letter-spacing:-.02em}
+.brand i{font-style:normal;color:var(--rosa)}
+.tools{display:flex;gap:8px;align-items:center}
+.pill{white-space:nowrap;border:1px solid var(--linea);background:transparent;color:var(--tinta2);border-radius:999px;padding:5px 12px;font-size:13px}
+.pill[aria-pressed="true"]{border-color:var(--tinta);color:var(--tinta)}
+.demo-tag{white-space:nowrap;background:var(--ambar-bg);color:#6a4500;border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600}
+
+.total p{margin:0;color:var(--tinta2);font-size:15px}
+.total .num{font-weight:800;font-size:clamp(56px,10vw,120px);line-height:.95;letter-spacing:-.04em;font-variant-numeric:tabular-nums;margin:6px 0 10px}
+.total .num small{font-size:.38em;font-weight:600;letter-spacing:0;color:var(--tinta2);margin-left:.15em}
+.resumen{font-size:17px;color:var(--tinta);max-width:52ch}
+.resumen b{font-weight:600}
+
+.tira{margin-top:clamp(24px,4vw,44px)}
+.tira h2{font-size:18px;font-weight:600;margin:0 0 10px}
+.row{display:grid;grid-template-columns:84px 1fr auto auto;gap:6px 16px;align-items:center;padding:14px 4px;border-bottom:2px dashed var(--linea)}
+.row:first-of-type{border-top:2px dashed var(--linea)}
+.row time{white-space:nowrap;font-family:var(--mono);font-size:13.5px;color:var(--tinta2)}
+.row .what{min-width:0}
+.row .what b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .what span{font-size:13.5px;color:var(--tinta2)}
+.row .amt{font-weight:600;font-size:19px;font-variant-numeric:tabular-nums;text-align:right}
+.badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 11px;font-size:13px;font-weight:600;white-space:nowrap}
+.badge::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.badge.paid{background:var(--verde-bg);color:#066646}
+.badge.pending{background:var(--ambar-bg);color:#7a5000}
+.row .acts{grid-column:2 / -1;display:flex;gap:8px;flex-wrap:wrap}
+.row .acts:empty{display:none}
+.row .acts a,.row .acts button{border:1px solid var(--linea);background:#fff;color:var(--tinta);border-radius:8px;padding:4px 10px;font-size:13px;text-decoration:none}
+.row .acts button.go{background:var(--tinta);border-color:var(--tinta);color:#fff}
+.row.nuevo{animation:flash 1.6s ease-out}
+@keyframes flash{from{background:#D9F4E8}to{background:transparent}}
+.vacio{padding:26px 4px;color:var(--tinta2);border-top:2px dashed var(--linea);border-bottom:2px dashed var(--linea);max-width:48ch}
+
+/* ---------- Ticket (el momento) ---------- */
+.ticket{position:fixed;left:50%;top:0;z-index:20;width:min(320px,88vw);margin-left:calc(min(320px,88vw) / -2);pointer-events:none}
+.ticket[hidden]{display:none}
+.t-body{background:var(--papel);padding:22px 22px 78px;font-family:var(--mono);color:var(--tinta);position:relative;box-shadow:0 18px 40px -18px #121B3388}
+.t-body::after{content:"";position:absolute;left:0;right:0;top:100%;height:12px;background:linear-gradient(-45deg,transparent 8px,var(--papel) 0) 0 0/16px 12px,linear-gradient(45deg,transparent 8px,var(--papel) 0) 0 0/16px 12px;filter:drop-shadow(0 8px 6px #121B3322)}
+.t-brand{font-family:var(--font);font-weight:800;font-size:15px;margin:0;text-align:center}
+.t-sub{margin:2px 0 14px;text-align:center;font-size:12px;color:var(--tinta2)}
+.t-amount{font-family:var(--font);font-weight:800;font-size:46px;line-height:1;letter-spacing:-.03em;text-align:center;margin:6px 0 16px;font-variant-numeric:tabular-nums}
+.t-body dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:13px;border-top:1px dashed var(--linea);padding-top:12px}
+.t-body dt{color:var(--tinta2)}
+.t-body dd{margin:0;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stamp{position:absolute;right:16px;bottom:14px;font-family:var(--font);font-weight:800;font-size:30px;letter-spacing:.02em;color:var(--verde);border:4px solid var(--verde);border-radius:8px;padding:0 10px;transform:rotate(-9deg);opacity:0;mix-blend-mode:multiply}
+.ticket.on .t-body{animation:print 1s steps(16,end) both}
+.ticket.on .stamp{animation:stamp .35s cubic-bezier(.2,1.4,.4,1) 1.05s both}
+.ticket.off .t-body{animation:out .5s ease-in both}
+@keyframes print{from{transform:translateY(-105%)}to{transform:translateY(0)}}
+@keyframes stamp{0%{transform:scale(2.6) rotate(-16deg);opacity:0}100%{transform:scale(1) rotate(-9deg);opacity:.92}}
+@keyframes out{to{transform:translateY(-110%)}}
+
+@media (max-width:900px){
+  .app{grid-template-columns:1fr}
+  .phone{position:relative;top:0;height:min(640px,80vh)}
+  .row{grid-template-columns:76px 1fr auto}
+  .row .badge{grid-column:2;justify-self:start}
+}
+@media (prefers-reduced-motion:reduce){
+  .ticket.on .t-body,.ticket.off .t-body{animation:none}
+  .ticket.on .stamp{animation:none;opacity:.92}
+  .row.nuevo{animation:none}
+  #log{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <section class="phone" aria-label="Chat de WhatsApp con el bot">
+    <header><div class="avatar" aria-hidden="true">C</div><div><b>Cobra CoDi</b><span>cobros por WhatsApp</span></div></header>
+    <div id="log" role="log" aria-live="polite"></div>
+    <div class="chips" id="chips" aria-label="Mensajes de ejemplo"></div>
+    <form class="composer" id="f">
+      <input id="t" autocomplete="off" aria-label="Mensaje" placeholder="Escribe: cóbrale 350 por 2 tortas">
+      <button type="submit">Enviar</button>
+    </form>
+  </section>
+
+  <main class="caja">
+    <div class="top">
+      <div class="brand">Cobra<i>·</i>CoDi</div>
+      <div class="tools">
+        <span class="demo-tag" id="demo" hidden>Modo demo</span>
+        <button class="pill" id="snd" aria-pressed="true">Sonido activado</button>
+      </div>
+    </div>
+
+    <section class="total" aria-label="Total de hoy">
+      <p>Cobrado hoy</p>
+      <div class="num" id="paid" aria-live="polite">$0<small>.00</small></div>
+      <p class="resumen" id="resumen">Aún no hay cobros hoy.</p>
+    </section>
+
+    <section class="tira">
+      <h2>Cobros</h2>
+      <div id="rows"></div>
+    </section>
+  </main>
+</div>
+
+<div class="ticket" id="ticket" hidden role="status" aria-live="polite">
+  <div class="t-body">
+    <p class="t-brand">Cobra·CoDi</p>
+    <p class="t-sub">Comprobante de pago recibido</p>
+    <p class="t-amount" id="t-amt">$0.00</p>
+    <dl>
+      <dt>Concepto</dt><dd id="t-con"></dd>
+      <dt>Vía</dt><dd id="t-via"></dd>
+      <dt>Hora</dt><dd id="t-hora"></dd>
+      <dt>Folio</dt><dd id="t-folio"></dd>
+    </dl>
+    <div class="stamp" aria-hidden="true">Pagado</div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const mxn = (n) => '$' + n.toLocaleString('es-MX', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const hora = (t) => new Date(t).toLocaleTimeString('es-MX', {hour: '2-digit', minute: '2-digit'});
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let demo = false;
+
+/* ---------- Chat ---------- */
+let cid; try { cid = localStorage.cid || (localStorage.cid = Math.random().toString(36).slice(2, 8)); } catch { cid = Math.random().toString(36).slice(2, 8); }
+const from = 'demo-' + cid;
+const log = $('log');
+function bubble(text, cls, img) {
+  const d = document.createElement('div');
+  d.className = 'm ' + cls;
+  d.innerHTML = esc(text).replace(/\*([^*]+)\*/g, '<b>$1</b>');
+  if (img) { const i = new Image(); i.alt = 'Código QR de CoDi'; i.src = img; d.appendChild(i); }
+  log.appendChild(d); log.scrollTop = log.scrollHeight;
+}
+async function send(text, silent) {
+  if (!silent) bubble(text, 'me');
+  try {
+    const r = await (await fetch('/api/demo/message', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({from, text})})).json();
+    (r.replies || []).forEach((x) => bubble(x.text, 'bot', x.chargeId ? '/qr/' + x.chargeId + '.png' : null));
+  } catch { bubble('No pude conectar con el servidor. Revisa que siga corriendo.', 'bot'); }
+  load();
+}
+$('f').onsubmit = (e) => { e.preventDefault(); const t = $('t'); const v = t.value.trim(); if (v) { t.value = ''; send(v); } };
+['cóbrale 350 por 2 tortas', 'cóbrale 120 a 5512345678 por mensualidad', 'sí', 'pendientes', 'resumen del día'].forEach((x) => {
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = x; b.onclick = () => send(x); $('chips').appendChild(b);
+});
+setInterval(async () => {
+  try { const r = await (await fetch('/api/demo/inbox?from=' + from)).json(); (r.messages || []).forEach((m) => bubble(m.text, 'bot')); } catch {}
+}, 1500);
+
+/* ---------- Sonido ---------- */
+let sound = true, ctx;
+$('snd').onclick = () => { sound = !sound; $('snd').setAttribute('aria-pressed', sound); $('snd').textContent = sound ? 'Sonido activado' : 'Sonido apagado'; };
+function chime() {
+  if (!sound) return;
+  try {
+    ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+    [[880, 0], [1318, .12]].forEach(([f, t]) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sine'; o.frequency.value = f; o.connect(g); g.connect(ctx.destination);
+      const s = ctx.currentTime + t; g.gain.setValueAtTime(.0001, s); g.gain.exponentialRampToValueAtTime(.18, s + .02); g.gain.exponentialRampToValueAtTime(.0001, s + .5);
+      o.start(s); o.stop(s + .55);
+    });
+  } catch {}
+}
+
+/* ---------- Ticket ---------- */
+let tk;
+function ticket(c) {
+  const el = $('ticket');
+  $('t-amt').textContent = mxn(c.amount);
+  $('t-con').textContent = c.concept;
+  $('t-via').textContent = c.method === 'qr' ? 'Código QR' : 'Solicitud al ' + (c.payerPhone || 'celular');
+  $('t-hora').textContent = hora(c.paidAt || Date.now());
+  $('t-folio').textContent = (c.peyTransactionId || c.id).slice(-10).toUpperCase();
+  clearTimeout(tk);
+  el.classList.remove('on', 'off'); el.hidden = false; void el.offsetWidth; el.classList.add('on');
+  chime();
+  tk = setTimeout(() => { el.classList.replace('on', 'off'); setTimeout(() => { el.hidden = true; }, reduce ? 0 : 500); }, 4600);
+}
+
+/* ---------- Total animado ---------- */
+let shown = 0, raf;
+function setTotal(to) {
+  cancelAnimationFrame(raf);
+  const start = shown, t0 = performance.now(), dur = reduce ? 0 : 700;
+  const paint = (v) => { const [i, d] = v.toFixed(2).split('.'); $('paid').innerHTML = '$' + Number(i).toLocaleString('es-MX') + '<small>.' + d + '</small>'; };
+  const step = (now) => {
+    const p = dur ? Math.min(1, (now - t0) / dur) : 1;
+    shown = start + (to - start) * (1 - Math.pow(1 - p, 3)); paint(shown);
+    if (p < 1) raf = requestAnimationFrame(step); else shown = to;
+  };
+  raf = requestAnimationFrame(step);
+}
+
+/* ---------- Cobros ---------- */
+const known = new Map(); let first = true;
+async function pay(id) { await fetch('/api/demo/pay/' + id, {method: 'POST'}); load(); }
+async function load() {
+  let cs; try { cs = await (await fetch('/api/charges')).json(); } catch { return; }
+  const d0 = new Date(); d0.setHours(0, 0, 0, 0);
+  const today = cs.filter((c) => c.createdAt >= d0.getTime());
+  const paid = today.filter((c) => c.status === 'paid');
+  const pend = today.filter((c) => c.status === 'pending');
+  const sum = (a) => a.reduce((s, c) => s + c.amount, 0);
+  if (Math.abs(sum(paid) - shown) > 0.001) setTotal(sum(paid));
+  $('resumen').innerHTML = today.length
+    ? '<b>' + paid.length + '</b> ' + (paid.length === 1 ? 'cobro pagado' : 'cobros pagados') + '. Faltan por cobrar <b>' + mxn(sum(pend)) + '</b> en ' + pend.length + (pend.length === 1 ? ' cobro.' : ' cobros.')
+    : 'Aún no hay cobros hoy.';
+
+  const fresh = [];
+  cs.forEach((c) => { const prev = known.get(c.id); if (!first && c.status === 'paid' && prev !== 'paid') fresh.push(c); known.set(c.id, c.status); });
+  first = false;
+
+  $('rows').innerHTML = cs.length ? cs.map((c) => {
+    const via = c.method === 'qr' ? 'Código QR' : 'Solicitud al ' + esc(c.payerPhone || 'celular');
+    const acts = [];
+    if (c.method === 'qr') acts.push('<a href="/qr/' + c.id + '.png" target="_blank" rel="noopener">Ver QR</a>');
+    if (demo && c.status === 'pending') acts.push('<button class="go" data-pay="' + c.id + '">Simular pago</button>');
+    return '<div class="row' + (fresh.includes(c) ? ' nuevo' : '') + '"><time>' + hora(c.createdAt) + '</time>' +
+      '<div class="what"><b>' + esc(c.concept) + '</b><span>' + via + '</span></div>' +
+      '<div class="amt">' + mxn(c.amount) + '</div>' +
+      '<span class="badge ' + c.status + '">' + (c.status === 'paid' ? 'Pagado' : 'Pendiente') + '</span>' +
+      '<div class="acts">' + acts.join('') + '</div></div>';
+  }).join('') : '<p class="vacio">Aún no hay cobros. En el chat escribe «cóbrale 350 por 2 tortas» y confirma con «sí».</p>';
+  if (fresh.length) ticket(fresh[fresh.length - 1]);
+}
+$('rows').addEventListener('click', (e) => { const b = e.target.closest('[data-pay]'); if (b) pay(b.dataset.pay); });
+
+fetch('/api/info').then((r) => r.json()).then((i) => { demo = i.demo; $('demo').hidden = !demo; load(); });
+setInterval(load, 1500);
+send('hola', true);
+</script>
+</body>
+</html>

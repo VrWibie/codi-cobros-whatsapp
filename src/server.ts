@@ -64,7 +64,7 @@ app.get('/qr/:id.png', async (req, res) => {
 
 // ---- Demo web + panel ----
 app.use('/api', express.json());
-app.get('/', (_q, r) => r.redirect('/panel'));
+app.get('/', (_q, r) => r.sendFile(path.join(pub, 'app.html')));
 app.get('/panel', (_q, r) => r.sendFile(path.join(pub, 'panel.html')));
 app.get('/demo', (_q, r) => r.sendFile(path.join(pub, 'demo.html')));
 app.get('/api/info', (_q, r) => r.json({ demo: DEMO, maxAmount: config.maxAmount }));
